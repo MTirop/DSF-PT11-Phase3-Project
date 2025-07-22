@@ -498,8 +498,9 @@ Random Forest has been selected as the best model for prediction because of:
 
 While the Decision Tree showed very strong performance, especially in Recall and F1-score, the Random Forest's superior ROC AUC and significantly lower False Positives (which can be costly in a business context) make it the preferred choice for deployment. The slight trade-off in Recall for Random Forest compared to Decision Tree is compensated by its higher precision and better overall discriminative power.
 
-#### 5.2 Feature Importance
-From our selected model of Random Forest the next step was to  analyse feature importance so as to give recommendations on whether some features( predictors) has higher impact on determining the customers who churned.
+#### 5.2 Random Forest Model Visualization
+From our selected model of Random Forest the next step was to  analyse feature importance, check churn probability distribution and compare probabilities verses actual outcome ,make conclusions on the model performance and share recommendations to the senior management.
+* #### Feature Importance
 
 ```# Feature importances from the Random Forest model
 feature_importances = best_rf_model.feature_importances_
@@ -539,11 +540,115 @@ print("Feature Importance plot generated successfully.")
 * Features related to international plans and usage (minutes, calls, charge) are also important, suggesting that these services or their associated costs contribute to churn.
 * Similar to daytime usage, evening usage and charges also play a significant role, though slightly less impactful than daytime.
 
+```# Export to CSV for Tableau
+importance_df.to_csv("feature_importances_rf.csv", index=False)
+```
+
+The code above saves features importance dataframe to a csv file
+
+The code cell below creates a DataFrame combining:
+
+* Input features (X_test)
+
+* True values (y_test)
+
+* Predicted labels (y_pred_rf)
+
+* Predicted churn probabilities (y_pred_proba_rf)
+
+and saves the data into a csv file.
+
+```# Combined predictions with test features and true labels
+results_df = X_test.copy()
+results_df["Actual"] = y_test.values
+results_df["Predicted"] = y_pred_rf
+results_df["Probability_Churn"] = y_pred_proba_rf
+
+# Export to CSV for Tableau
+results_df.to_csv("rf_predictions_results.csv", index=False)
+```
+* #### Churn Probability Distribution
+```# Churn Probability Distribution
+plt.figure(figsize=(8, 5))
+sns.histplot(results_df["Probability_Churn"], bins=20, kde=True, color='orange')
+plt.title("Distribution of Predicted Churn Probabilities")
+plt.xlabel("Predicted Probability of Churn")
+plt.ylabel("Number of Customers")
+plt.tight_layout()
+plt.show()
+```
+![Churn Probability Distribution](./Images/Distribution%20of%20predicted%20Churn%20Probabilities.png)
+
+The histogram above displays the distribution of predicted churn probabilities from the Random Forest model:
+* Most customers have a low predicted probability of churn (between 0.0 and 0.2), indicating the model is   confident that these customers are unlikely to churn.
+* The distribution is right-skewed, suggesting that churn is relatively rare in the dataset.
+* A smaller portion of customers fall within the medium to high churn probability range (above 0.4), which represents a critical segment for potential targeted retention efforts.
+* The smooth line (KDE) helps to visualize the overall trend in predicted churn risk.
+
+* #### Probability Vs Actual Outcome
+```# Probability Vs Actual Outcome
+plt.figure(figsize=(8, 5))
+sns.boxplot(x="Actual", y="Probability_Churn", data=results_df)
+plt.title("Predicted Churn Probability by Actual Class")
+plt.xlabel("Actual Churn")
+plt.ylabel("Predicted Churn Probability")
+plt.tight_layout()
+plt.show()
+```
+
+![Churn Prbability Vs Actual outcome](./Images/Predicted%20Churn%20probability%20by%20Actual%20class.png)
+
+This boxplot compares the predicted churn probabilities between the two actual classes.
+**Class 0 (Non-Churners)**
+* The predicted probabilities are mostly low (centered around 0.05–0.1).
+**Class 1 (Churners)**
+* These customers have significantly higher predicted probabilities, with a median around 0.55–0.6
+* The model is generally assigning higher risk to actual churners.
+
+The Random Forest model effectively differentiates between churners and non-churners. Higher predicted probabilities align well with actual churners, supporting the model's use for risk scoring and targeted retention strategies.
+
+* #### Risk Categories and Distribution of risk Levels
+```# Creating risk categories
+def assign_risk(prob):
+    if prob >= 0.6:
+        return "High Risk"
+    elif prob >= 0.3:
+        return "Medium Risk"
+    else:
+        return "Low Risk"
+
+# Apply function
+results_df["Churn_Risk_Level"] = results_df["Probability_Churn"].apply(assign_risk)
+````
+```# Distribution of risk Levels
+plt.figure(figsize=(8, 5))
+sns.countplot(x="Churn_Risk_Level", data=results_df, order=["Low Risk", "Medium Risk", "High Risk"], palette="Set2")
+plt.title("Customer Count by Churn Risk Level")
+plt.xlabel("Churn Risk Level")
+plt.ylabel("Number of Customers")
+plt.tight_layout()
+plt.show()
+```
+![Customer Count by Churn Risk](./Images/Customer%20Count%20by%20Churn%20Risk.png)
+
+The chart displays how customers are distributed across three churn risk categories based on predicted probabilities from the Random Forest model:
+
+***Low Risk (0.00–0.29)***
+The majority of customers fall into this category. These customers are unlikely to churn and may only require standard retention strategies.
+
+***Medium Risk (0.30–0.59)***
+A smaller segment of customers is at moderate risk. These individuals should be monitored and could benefit from personalized engagement or loyalty incentives.
+
+***High Risk (0.60–1.00)***
+This is a critical group with a high likelihood of churning. They should be prioritized for immediate intervention, such as targeted offers, service improvement calls, or personalized support.
+
+This segmentation enables the organization to prioritize customer retention efforts efficiently by focusing resources on customers with the highest predicted risk of churn.
+
 #### 6.0 RECOMMENDATIONS
 * Total day minutes,customer service calls,international plan, total evening charges are the most important features in determining the customer churn.
-* Random Forest is recommended as the most robust predictive model that accurately identified customers at risk.
-* Offer Incentives plans for international callers because the customers using this plan could be churning because of cost.
-* Re-evaluate pricing for high usage cutomers( The day/evening charge)-The company to offer better calling rates for this classes of customers to reduce cost on the customer side.
-* Develop a marketing strtegy by offering exclusive benefits, discounts, or loyalty points to high-usage customers. Reward them for their loyalty with personalized offers that acknowledge their high consumption.
-* Improvement in customer service either through follow up with the aggriieved customers to ensure their concerns were acted on satisfactorilty.
-* More resources to be allocated to the customers who call during the day as it is clearly shown that they are at high risk of churning. This can be achieved by lowering the calling rates which is a cost to the company.
+* Random Forest is recommended as the most robust predictive model that accurately identified customers at risk but need to be retrained periodically using latest data to mentain prediction accuracy.
+* Assign customer success managers or special support channels to high-risk accounts to reduce frustration and enhance satisfaction for high risk customers
+* Use churn probabilities to create automated alerts for sales or customer care teams when a customer’s risk rises.
+* Develop a marketing strategy by offering exclusive benefits, discounts, or loyalty points low-risk customers. Reward them for their loyalty with personalized offers that acknowledge their high consumption.
+* Track engagement signals (e.g., reduced usage, late payments) to detect early signs of churn.
+* Launch urgent, personalized outreach campaigns (e.g., call center, SMS, or email) to address issues like poor service, billing complaints, or unmet expectations for high risk customers
