@@ -652,3 +652,8 @@ This segmentation enables the organization to prioritize customer retention effo
 * Develop a marketing strategy by offering exclusive benefits, discounts, or loyalty points low-risk customers. Reward them for their loyalty with personalized offers that acknowledge their high consumption.
 * Track engagement signals (e.g., reduced usage, late payments) to detect early signs of churn.
 * Launch urgent, personalized outreach campaigns (e.g., call center, SMS, or email) to address issues like poor service, billing complaints, or unmet expectations for high risk customers
+
+* #### 7.0 NON TECHNICAL PRESENTATION
+Check out the link to [Non Technical Presentation ](https://drive.google.com/file/d/13FaGBUY1_cSDVW9zyNU4OD_JsmadL_Gu/view?usp=sharing)
+* #### 8.0 LICENSE
+* This project is licensed under the [GNU General Public Licence v3.0](https://github.com/MTirop/DSF-PT11-Phase3-Project/blob/master/LICENSE)
