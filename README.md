@@ -16,7 +16,9 @@
 * [Model Evaluation](#60-model-evaluation)
     * [Model Selection](#61-final-model-selection)
     * [Feature Importance](#62-feature-importance)
-* [Recommendations](#70-recommendations)
+* [Recommendations](#60-recommendations)
+* [Non Technical Presentation](#70-non-technical-presentation)
+* [License](#80-license)
 
 ##### 1.0 BUSINESS UNDERSTANDING
 
@@ -653,7 +655,7 @@ This segmentation enables the organization to prioritize customer retention effo
 * Track engagement signals (e.g., reduced usage, late payments) to detect early signs of churn.
 * Launch urgent, personalized outreach campaigns (e.g., call center, SMS, or email) to address issues like poor service, billing complaints, or unmet expectations for high risk customers
 
-* #### 7.0 NON TECHNICAL PRESENTATION
+ #### 7.0 NON TECHNICAL PRESENTATION
 Check out the link to [Non Technical Presentation ](https://drive.google.com/file/d/13FaGBUY1_cSDVW9zyNU4OD_JsmadL_Gu/view?usp=sharing)
-* #### 8.0 LICENSE
-* This project is licensed under the [GNU General Public Licence v3.0](https://github.com/MTirop/DSF-PT11-Phase3-Project/blob/master/LICENSE)
+ #### 8.0 LICENSE
+This project is licensed under the [GNU General Public Licence v3.0](https://github.com/MTirop/DSF-PT11-Phase3-Project/blob/master/LICENSE)
